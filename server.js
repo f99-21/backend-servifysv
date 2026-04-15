@@ -18,6 +18,8 @@ app.get("/", (req, res) => {
 const serviciosRoutes = require("./routes/servicios");
 app.use("/api", serviciosRoutes);
 
-app.listen(3000, () => {
-    console.log("Servidor corriendo en puerto 3000");
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+    console.log("Servidor corriendo en puerto", PORT);
 });
