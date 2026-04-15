@@ -10,10 +10,12 @@ app.use(express.json());
 const authRoutes = require("./routes/auth.routes");
 const serviciosRoutes = require("./routes/servicios.routes");
 const chatRoutes = require("./routes/chat.routes");
+const historialRoutes = require("./routes/historial.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/servicios", serviciosRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/historial", historialRoutes);
 
 // TEST
 app.get("/", (req, res) => {
