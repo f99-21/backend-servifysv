@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 // 🔑 REGISTRO
 router.post("/register", async (req, res) => {
@@ -29,7 +28,7 @@ router.post("/register", async (req, res) => {
 });
 
 
-// 🔑 LOGIN
+// 🔑 LOGIN SIN TOKEN
 router.post("/login", (req, res) => {
     const { correo, password } = req.body;
 
@@ -44,7 +43,7 @@ router.post("/login", (req, res) => {
             }
 
             if (results.length === 0) {
-                return res.json({ success: false });
+                return res.json({ success: false, message: "Usuario no existe" });
             }
 
             const user = results[0];
@@ -52,19 +51,18 @@ router.post("/login", (req, res) => {
             const valid = await bcrypt.compare(password, user.contraseña);
 
             if (!valid) {
-                return res.json({ success: false });
+                return res.json({ success: false, message: "Contraseña incorrecta" });
             }
 
-            const token = jwt.sign(
-                { id: user.id_usuario },
-                "secret_key",
-                { expiresIn: "1h" }
-            );
-
+            // ✅ SIN TOKEN, SOLO RESPUESTA SIMPLE
             res.json({
                 success: true,
-                token: token,
-                usuario: user
+                usuario: {
+                    id: user.id_usuario,
+                    correo: user.correo,
+                    nombre: user.nombre,
+                    tipo: user.tipo_usuario
+                }
             });
         }
     );
