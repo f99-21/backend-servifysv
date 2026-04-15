@@ -1,60 +1,65 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
-const bcrypt = require("bcrypt");
 
-// 🔑 REGISTRO
-router.post("/register", async (req, res) => {
+// 🔑 REGISTRO SIN HASH
+router.post("/register", (req, res) => {
     const { correo, password } = req.body;
 
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        db.query(
-            "INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
-            ["Usuario", correo, hashedPassword, "cliente"],
-            (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ success: false });
-                }
-                res.json({ success: true });
+    db.query(
+        "INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
+        ["Usuario", correo, password, "cliente"], // 👈 contraseña en texto plano
+        (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Error al registrar"
+                });
             }
-        );
 
-    } catch (error) {
-        res.status(500).json({ success: false });
-    }
+            res.json({
+                success: true,
+                message: "Usuario registrado"
+            });
+        }
+    );
 });
 
 
-// 🔑 LOGIN SIN TOKEN
+// 🔑 LOGIN SIN HASH
 router.post("/login", (req, res) => {
     const { correo, password } = req.body;
 
     db.query(
         "SELECT * FROM Usuario WHERE correo = ?",
         [correo],
-        async (err, results) => {
+        (err, results) => {
 
             if (err) {
                 console.error(err);
-                return res.status(500).json({ success: false });
+                return res.status(500).json({
+                    success: false
+                });
             }
 
             if (results.length === 0) {
-                return res.json({ success: false, message: "Usuario no existe" });
+                return res.json({
+                    success: false,
+                    message: "Usuario no existe"
+                });
             }
 
             const user = results[0];
 
-            const valid = await bcrypt.compare(password, user.contraseña);
-
-            if (!valid) {
-                return res.json({ success: false, message: "Contraseña incorrecta" });
+            // 👇 COMPARACIÓN DIRECTA
+            if (password !== user.contraseña) {
+                return res.json({
+                    success: false,
+                    message: "Contraseña incorrecta"
+                });
             }
 
-            // ✅ SIN TOKEN, SOLO RESPUESTA SIMPLE
             res.json({
                 success: true,
                 usuario: {
