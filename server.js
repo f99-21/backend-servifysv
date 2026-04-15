@@ -6,14 +6,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// rutas
-const authRoutes = require("./routes/auth");
-app.use("/api", authRoutes);
+// ROUTES
+const authRoutes = require("./routes/auth.routes");
+const serviciosRoutes = require("./routes/servicios.routes");
 
-const serviciosRoutes = require("./routes/servicios");
-app.use("/api", serviciosRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/servicios", serviciosRoutes);
 
-// prueba
+// TEST
 app.get("/", (req, res) => {
     res.send("API ServifySV funcionando 🔥");
 });
