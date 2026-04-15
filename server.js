@@ -8,15 +8,15 @@ app.use(express.json());
 
 // rutas
 const authRoutes = require("./routes/auth");
-app.use("/", authRoutes);
+app.use("/api", authRoutes);
+
+const serviciosRoutes = require("./routes/servicios");
+app.use("/api", serviciosRoutes);
 
 // prueba
 app.get("/", (req, res) => {
     res.send("API ServifySV funcionando 🔥");
 });
-//servicios
-const serviciosRoutes = require("./routes/servicios");
-app.use("/api", serviciosRoutes);
 
 const PORT = process.env.PORT || 8080;
 

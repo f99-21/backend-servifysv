@@ -6,50 +6,65 @@ const jwt = require("jsonwebtoken");
 
 // 🔑 REGISTRO
 router.post("/register", async (req, res) => {
-    const { email, password } = req.body;
+    const { correo, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.query(
-        "INSERT INTO usuarios (email, password) VALUES (?, ?)",
-        [email, hashedPassword],
-        (err) => {
-            if (err) return res.status(500).json({ error: err });
-            res.json({ success: true });
-        }
-    );
+        db.query(
+            "INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
+            ["Usuario", correo, hashedPassword, "cliente"],
+            (err) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ success: false });
+                }
+                res.json({ success: true });
+            }
+        );
+
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
 });
+
 
 // 🔑 LOGIN
 router.post("/login", (req, res) => {
-    const { email, password } = req.body;
+    const { correo, password } = req.body;
 
     db.query(
-        "SELECT * FROM usuarios WHERE email = ?",
-        [email],
+        "SELECT * FROM Usuario WHERE correo = ?",
+        [correo],
         async (err, results) => {
 
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ success: false });
+            }
+
             if (results.length === 0) {
-                return res.status(401).json({ success: false });
+                return res.json({ success: false });
             }
 
             const user = results[0];
 
-            const valid = await bcrypt.compare(password, user.password);
+            const valid = await bcrypt.compare(password, user.contraseña);
 
             if (!valid) {
-                return res.status(401).json({ success: false });
+                return res.json({ success: false });
             }
 
             const token = jwt.sign(
-                { id: user.id },
+                { id: user.id_usuario },
                 "secret_key",
                 { expiresIn: "1h" }
             );
 
             res.json({
                 success: true,
-                token: token
+                token: token,
+                usuario: user
             });
         }
     );

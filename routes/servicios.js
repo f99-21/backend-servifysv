@@ -20,10 +20,14 @@ router.get("/servicios", (req, res) => {
 
     db.query(query, (err, results) => {
         if (err) {
-            return res.status(500).json({ error: err });
+            console.error("❌ Error al obtener servicios:", err);
+            return res.status(500).json({ success: false });
         }
 
-        res.json(results);
+        res.json({
+            success: true,
+            servicios: results
+        });
     });
 });
 
