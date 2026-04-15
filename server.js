@@ -11,11 +11,14 @@ const authRoutes = require("./routes/auth.routes");
 const serviciosRoutes = require("./routes/servicios.routes");
 const chatRoutes = require("./routes/chat.routes");
 const historialRoutes = require("./routes/historial.routes");
+const profesionalesRoutes = require("./routes/profesionales.routes");
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/servicios", serviciosRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/historial", historialRoutes);
+app.use("/api/profesionales", profesionalesRoutes);
 
 // TEST
 app.get("/", (req, res) => {
