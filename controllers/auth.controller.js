@@ -41,7 +41,8 @@ exports.login = (req, res) => {
 
             const user = results[0];
 
-            if (password !== user.password) {
+            // 🔥 CORRECCIÓN AQUÍ
+            if (contraseña !== user.contraseña) {
                 return res.json({ ok: false, message: "Contraseña incorrecta" });
             }
 
