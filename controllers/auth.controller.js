@@ -10,19 +10,20 @@ exports.register = (req, res) => {
         (err) => {
             if (err) {
                 return res.status(500).json({
-                    ok: false,
+                    success: false,
                     message: "Error al registrar usuario"
                 });
             }
 
             res.json({
-                ok: true,
+                success: true,
                 message: "Usuario registrado"
             });
         }
     );
 };
-//login 
+
+// 🔑 LOGIN
 exports.login = (req, res) => {
     const { correo, contraseña } = req.body;
 
@@ -32,43 +33,68 @@ exports.login = (req, res) => {
         (err, results) => {
 
             if (err) {
-                return res.status(500).json({ ok: false });
+                return res.status(500).json({
+                    success: false,
+                    message: "Error en el servidor"
+                });
             }
 
             if (results.length === 0) {
-                return res.json({ ok: false, message: "Usuario no existe" });
+                return res.json({
+                    success: false,
+                    message: "Usuario no existe"
+                });
             }
 
             const user = results[0];
 
-            // 🔥 CORRECCIÓN AQUÍ
+            // comparación directa (sin encriptar)
             if (contraseña !== user.contraseña) {
-                return res.json({ ok: false, message: "Contraseña incorrecta" });
+                return res.json({
+                    success: false,
+                    message: "Contraseña incorrecta"
+                });
             }
 
             res.json({
-                ok: true,
+                success: true,
                 usuario: {
                     id: user.id_usuario,
                     nombre: user.nombre,
                     correo: user.correo,
-                    tipo: user.tipo_usuario
+                    tipo_usuario: user.tipo_usuario
                 }
             });
         }
     );
 };
 
-//perfil
+// 👤 PERFIL
 exports.getPerfil = (req, res) => {
     const { id } = req.params;
 
     db.query(
-        "SELECT id, nombre, correo, tipo_usuario FROM Usuario WHERE id = ?",
+        "SELECT id_usuario, nombre, correo, tipo_usuario FROM Usuario WHERE id_usuario = ?",
         [id],
         (err, result) => {
-            if (err) return res.status(500).json(err);
-            res.json(result[0]);
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Error en el servidor"
+                });
+            }
+
+            if (result.length === 0) {
+                return res.json({
+                    success: false,
+                    message: "Usuario no encontrado"
+                });
+            }
+
+            res.json({
+                success: true,
+                usuario: result[0]
+            });
         }
     );
 };
