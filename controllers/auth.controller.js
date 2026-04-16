@@ -1,5 +1,4 @@
 const db = require("../db");
-const bcrypt = require("bcrypt");
 
 // 🔑 REGISTRO
 exports.register = async (req, res) => {
@@ -37,7 +36,7 @@ exports.login = (req, res) => {
     db.query(
         "SELECT * FROM Usuario WHERE correo = ?",
         [correo],
-        async (err, results) => {
+        (err, results) => {
 
             if (err) {
                 return res.status(500).json({ ok: false });
@@ -49,9 +48,7 @@ exports.login = (req, res) => {
 
             const user = results[0];
 
-            const match = await bcrypt.compare(password, user.contraseña);
-
-            if (!match) {
+            if (password !== user.password) {
                 return res.json({ ok: false, message: "Contraseña incorrecta" });
             }
 
