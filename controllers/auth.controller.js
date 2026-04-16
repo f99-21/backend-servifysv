@@ -1,33 +1,26 @@
 const db = require("../db");
 
 // 🔑 REGISTRO
-exports.register = async (req, res) => {
-    const { nombre, correo, password, tipo_usuario, especialidad } = req.body;
+exports.register = (req, res) => {
+    const { nombre, correo, password, tipo_usuario } = req.body;
 
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        db.query(
-            "INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
-            [nombre, correo, hashedPassword, tipo_usuario],
-            (err) => {
-                if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        message: "Error al registrar usuario"
-                    });
-                }
-
-                res.json({
-                    ok: true,
-                    message: "Usuario registrado"
+    db.query(
+        "INSERT INTO Usuario (nombre, correo, password, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
+        [nombre, correo, password, tipo_usuario],
+        (err) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: "Error al registrar usuario"
                 });
             }
-        );
 
-    } catch (error) {
-        res.status(500).json({ ok: false, message: "Error servidor" });
-    }
+            res.json({
+                ok: true,
+                message: "Usuario registrado"
+            });
+        }
+    );
 };
 //login 
 exports.login = (req, res) => {
