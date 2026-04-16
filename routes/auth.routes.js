@@ -7,5 +7,7 @@ router.post("/register", authController.register);
 
 // LOGIN
 router.post("/login", authController.login);
+// PERFIL
+router.get("/perfil/:id", authController.getPerfil);
 
 module.exports = router;

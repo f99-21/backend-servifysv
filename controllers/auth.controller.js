@@ -67,3 +67,17 @@ exports.login = (req, res) => {
         }
     );
 };
+
+//perfil
+exports.getPerfil = (req, res) => {
+    const { id } = req.params;
+
+    db.query(
+        "SELECT id, nombre, correo, tipo_usuario FROM Usuario WHERE id = ?",
+        [id],
+        (err, result) => {
+            if (err) return res.status(500).json(err);
+            res.json(result[0]);
+        }
+    );
+};
