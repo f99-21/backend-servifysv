@@ -2,11 +2,11 @@ const db = require("../db");
 
 // 🔑 REGISTRO
 exports.register = (req, res) => {
-    const { nombre, correo, password, tipo_usuario } = req.body;
+    const { nombre, correo, contraseña, tipo_usuario } = req.body;
 
     db.query(
-        "INSERT INTO Usuario (nombre, correo, password, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
-        [nombre, correo, password, tipo_usuario],
+        "INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
+        [nombre, correo, contraseña, tipo_usuario],
         (err) => {
             if (err) {
                 return res.status(500).json({
@@ -24,7 +24,7 @@ exports.register = (req, res) => {
 };
 //login 
 exports.login = (req, res) => {
-    const { correo, password } = req.body;
+    const { correo, contraseña } = req.body;
 
     db.query(
         "SELECT * FROM Usuario WHERE correo = ?",
