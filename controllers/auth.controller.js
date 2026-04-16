@@ -26,8 +26,6 @@ exports.register = (req, res) => {
 exports.login = (req, res) => {
     const { correo, contraseña } = req.body;
 
-    console.log("BODY:", req.body);
-
     db.query(
         "SELECT * FROM Usuario WHERE correo = ?",
         [correo],
@@ -43,13 +41,8 @@ exports.login = (req, res) => {
 
             const user = results[0];
 
-            const input = (contraseña || "").trim();
-            const dbPass = (user.contraseña || "").trim();
-
-            console.log("INPUT:", `"${input}"`);
-            console.log("DB:", `"${dbPass}"`);
-
-            if (input !== dbPass) {
+            // 🔥 CORRECCIÓN AQUÍ
+            if (contraseña !== user.contraseña) {
                 return res.json({ ok: false, message: "Contraseña incorrecta" });
             }
 
