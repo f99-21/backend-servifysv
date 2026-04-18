@@ -5,6 +5,10 @@ const { validateParams } = require("../../middleware/validation.middleware");
 const { idUsuarioSchema } = require("../../schemas/historial.schema");
 const { verifyToken } = require("../../middleware/auth.middleware");
 
-router.get("/:idUsuario", verifyToken, validateParams(idUsuarioSchema), historialController.getHistorial);
+router.get("/cliente/:idUsuario", verifyToken, validateParams(idUsuarioSchema), historialController.getHistorial);
+
+router.get("/profesional/:idUsuario/trabajos", verifyToken, validateParams(idUsuarioSchema), historialController.obtenerTrabajosProfesional);
+
+router.get("/profesional/:idUsuario/ingresos", verifyToken, validateParams(idUsuarioSchema), historialController.obtenerIngresosProfesional);
 
 module.exports = router;

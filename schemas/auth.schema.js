@@ -30,3 +30,11 @@ exports.perfilSchema = Joi.object({
         "number.base": "El ID debe ser un número"
     })
 });
+
+exports.actualizarPerfilSchema = Joi.object({
+    nombre: Joi.string().min(3).max(100),
+    telefono: Joi.string().max(20),
+    correo: Joi.string().email()
+}).min(1).messages({
+    "object.min": "Debe proporcionar al menos un campo para actualizar"
+});

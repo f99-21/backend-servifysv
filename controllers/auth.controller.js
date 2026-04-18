@@ -136,3 +136,53 @@ exports.getPerfil = (req, res) => {
         }
     );
 };
+
+exports.actualizarPerfil = (req, res) => {
+    const { id } = req.validatedParams;
+    const { nombre, telefono, correo } = req.validatedData;
+
+    const updates = [];
+    const values = [];
+
+    if (nombre) {
+        updates.push("nombre = ?");
+        values.push(nombre);
+    }
+    if (correo) {
+        updates.push("correo = ?");
+        values.push(correo);
+    }
+
+    if (updates.length === 0) {
+        return res.status(400).json({
+            success: false,
+            message: "No hay datos para actualizar"
+        });
+    }
+
+    values.push(id);
+
+    const query = `UPDATE Usuario SET ${updates.join(", ")} WHERE id_usuario = ?`;
+
+    db.query(query, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({
+                success: false,
+                message: "Error al actualizar perfil"
+            });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Perfil actualizado exitosamente"
+        });
+    });
+};

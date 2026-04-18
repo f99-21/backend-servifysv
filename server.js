@@ -37,12 +37,16 @@ const serviciosRoutes = require("./routes/v1/servicios.routes");
 const chatRoutes = require("./routes/v1/chat.routes");
 const historialRoutes = require("./routes/v1/historial.routes");
 const profesionalesRoutes = require("./routes/v1/profesionales.routes");
+const solicitudRoutes = require("./routes/v1/solicitud.routes");
+const resenaRoutes = require("./routes/v1/resena.routes");
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/servicios", serviciosRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/historial", historialRoutes);
 app.use("/api/v1/profesionales", profesionalesRoutes);
+app.use("/api/v1/solicitudes", solicitudRoutes);
+app.use("/api/v1/resenas", resenaRoutes);
 
 // Health Check
 app.get("/health", (req, res) => {
@@ -57,8 +61,10 @@ app.get("/", (req, res) => {
             auth: "/api/v1/auth",
             servicios: "/api/v1/servicios",
             profesionales: "/api/v1/profesionales",
+            solicitudes: "/api/v1/solicitudes",
             chat: "/api/v1/chat",
-            historial: "/api/v1/historial"
+            historial: "/api/v1/historial",
+            resenas: "/api/v1/resenas"
         }
     });
 });
