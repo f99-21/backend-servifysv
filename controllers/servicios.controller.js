@@ -29,7 +29,7 @@ exports.getServicios = (req, res) => {
 
 
 exports.getProfesionalById = (req, res) => {
-    const { id } = req.params;
+    const { id } = req.validatedParams;
 
     const query = `
         SELECT 

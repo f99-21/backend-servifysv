@@ -2,7 +2,7 @@ const db = require("../db");
 
 exports.getHistorial = (req, res) => {
 
-    const { idUsuario } = req.params;
+    const { idUsuario } = req.validatedParams;
 
     const query = `
         SELECT 

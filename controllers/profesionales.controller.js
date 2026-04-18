@@ -52,7 +52,7 @@ exports.getProfesionales = (req, res) => {
 
 exports.getByCategoria = (req, res) => {
 
-    const { categoria } = req.params;
+    const { categoria } = req.validatedParams;
 
     const query = `
         SELECT 

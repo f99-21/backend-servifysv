@@ -4,7 +4,7 @@ const db = require("../db");
 // 📥 OBTENER MENSAJES
 exports.getMensajes = (req, res) => {
 
-    const { idSolicitud } = req.params;
+    const { idSolicitud } = req.validatedParams;
 
     const query = `
         SELECT 
@@ -44,7 +44,7 @@ exports.getMensajes = (req, res) => {
 };
 exports.sendMensaje = (req, res) => {
 
-    const { idSolicitud, idRemitente, contenido } = req.body;
+    const { idSolicitud, idRemitente, contenido } = req.validatedData;
 
     const query = `
         INSERT INTO Mensaje (id_solicitud, id_remitente, contenido)
@@ -67,7 +67,7 @@ exports.sendMensaje = (req, res) => {
 
 exports.getChats = (req, res) => {
 
-    const { idUsuario } = req.params;
+    const { idUsuario } = req.validatedParams;
 
     const query = `
         SELECT 
