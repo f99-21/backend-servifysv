@@ -56,7 +56,7 @@ CREATE TABLE Servicio (
     descripcion TEXT,
     precio_referencia DECIMAL(10,2) NOT NULL,
     disponibilidad TINYINT(1) DEFAULT 1,
-    fecha_creacion DATE DEFAULT CURDATE(),
+    fecha_creacion DATE NOT NULL,
 
     FOREIGN KEY (id_profesional) REFERENCES Profesional(id_profesional) ON DELETE CASCADE,
     INDEX idx_profesional (id_profesional),
@@ -75,7 +75,7 @@ CREATE TABLE Solicitud (
     id_servicio INT NOT NULL,
     descripcion TEXT,
     estado ENUM('pendiente', 'aceptada', 'rechazada', 'completada', 'cancelada') DEFAULT 'pendiente',
-    fecha DATE DEFAULT CURDATE(),
+    fecha DATE NOT NULL,
 
     FOREIGN KEY (id_cliente) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_profesional) REFERENCES Profesional(id_profesional) ON DELETE CASCADE,
@@ -116,7 +116,7 @@ CREATE TABLE Resena (
     id_profesional INT NOT NULL,
     calificacion INT NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
     comentario TEXT,
-    fecha_resena DATE DEFAULT CURDATE(),
+    fecha_resena DATE NOT NULL,
 
     FOREIGN KEY (id_solicitud) REFERENCES Solicitud(id_solicitud) ON DELETE CASCADE,
     FOREIGN KEY (id_cliente) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
@@ -134,15 +134,17 @@ CREATE TABLE Resena (
 -- ❌ Historial - Redundante (datos en Solicitud)
 
 -- ============================================
--- SAMPLE DATA (Para pruebas)
+-- SAMPLE DATA (Para pruebas - COMENTADO)
 -- ============================================
-
+-- Descomentar si quieres datos de prueba
+-- Los datos reales se insertan desde tu aplicación Node.js
+/*
 -- Usuarios
 INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario, telefono, ubicacion, fecha_registro) VALUES
-('Juan Pérez', 'juan@test.com', '$2b$10$...', 'cliente', '+503 7123-4567', 'San Salvador', CURDATE()),
-('María López', 'maria@test.com', '$2b$10$...', 'cliente', '+503 7234-5678', 'San Salvador', CURDATE()),
-('Carlos López', 'carlos@test.com', '$2b$10$...', 'profesional', '+503 7345-6789', 'San Salvador', CURDATE()),
-('Ana García', 'ana@test.com', '$2b$10$...', 'profesional', '+503 7456-7890', 'San Salvador', CURDATE());
+('Juan Pérez', 'juan@test.com', '$2b$10$...', 'cliente', '+503 7123-4567', 'San Salvador', '2026-04-24'),
+('María López', 'maria@test.com', '$2b$10$...', 'cliente', '+503 7234-5678', 'San Salvador', '2026-04-24'),
+('Carlos López', 'carlos@test.com', '$2b$10$...', 'profesional', '+503 7345-6789', 'San Salvador', '2026-04-24'),
+('Ana García', 'ana@test.com', '$2b$10$...', 'profesional', '+503 7456-7890', 'San Salvador', '2026-04-24');
 
 -- Profesionales
 INSERT INTO Profesional (id_usuario, especialidad, descripcion, experiencia, estado_verificacion, calificacion_promedio, total_calificaciones, biografia) VALUES
@@ -151,16 +153,16 @@ INSERT INTO Profesional (id_usuario, especialidad, descripcion, experiencia, est
 
 -- Servicios
 INSERT INTO Servicio (id_profesional, nombre_servicio, categoria, descripcion, precio_referencia, disponibilidad, fecha_creacion) VALUES
-(1, 'Instalación eléctrica', 'electricidad', 'Instalación de circuitos y toma corrientes en el hogar', 50.00, 1, CURDATE()),
-(1, 'Reparación de cortocircuito', 'electricidad', 'Diagnóstico y reparación de problemas eléctricos', 30.00, 1, CURDATE()),
-(2, 'Limpieza profunda de hogar', 'limpieza', 'Limpieza detallada y profunda de toda la casa', 45.50, 1, CURDATE()),
-(2, 'Limpieza de oficinas', 'limpieza', 'Servicios de limpieza para espacios comerciales', 60.00, 1, CURDATE());
+(1, 'Instalación eléctrica', 'electricidad', 'Instalación de circuitos y toma corrientes en el hogar', 50.00, 1, '2026-04-24'),
+(1, 'Reparación de cortocircuito', 'electricidad', 'Diagnóstico y reparación de problemas eléctricos', 30.00, 1, '2026-04-24'),
+(2, 'Limpieza profunda de hogar', 'limpieza', 'Limpieza detallada y profunda de toda la casa', 45.50, 1, '2026-04-24'),
+(2, 'Limpieza de oficinas', 'limpieza', 'Servicios de limpieza para espacios comerciales', 60.00, 1, '2026-04-24');
 
 -- Solicitudes
 INSERT INTO Solicitud (id_cliente, id_profesional, id_servicio, descripcion, estado, fecha) VALUES
-(1, 1, 1, 'Necesito instalación de circuitos en mi casa nueva', 'completada', DATE_SUB(CURDATE(), INTERVAL 5 DAY)),
-(2, 2, 3, 'Quiero limpieza profunda para mi hogar', 'completada', DATE_SUB(CURDATE(), INTERVAL 3 DAY)),
-(1, 2, 4, 'Necesito limpiar mi oficina', 'aceptada', CURDATE());
+(1, 1, 1, 'Necesito instalación de circuitos en mi casa nueva', 'completada', '2026-04-19'),
+(2, 2, 3, 'Quiero limpieza profunda para mi hogar', 'completada', '2026-04-21'),
+(1, 2, 4, 'Necesito limpiar mi oficina', 'aceptada', '2026-04-24');
 
 -- Mensajes
 INSERT INTO Mensaje (id_solicitud, id_remitente, contenido, fecha_envio) VALUES
@@ -172,8 +174,9 @@ INSERT INTO Mensaje (id_solicitud, id_remitente, contenido, fecha_envio) VALUES
 
 -- Reseñas
 INSERT INTO Resena (id_solicitud, id_cliente, id_profesional, calificacion, comentario, fecha_resena) VALUES
-(1, 1, 1, 5, 'Excelente trabajo, muy profesional y puntual', DATE_SUB(CURDATE(), INTERVAL 5 DAY)),
-(2, 2, 2, 5, 'Quedó impecable, muy recomendable', DATE_SUB(CURDATE(), INTERVAL 3 DAY));
+(1, 1, 1, 5, 'Excelente trabajo, muy profesional y puntual', '2026-04-19'),
+(2, 2, 2, 5, 'Quedó impecable, muy recomendable', '2026-04-21');
+*/
 
 -- ============================================
 -- VERIFICAR ESTRUCTURA
