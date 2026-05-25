@@ -29,7 +29,7 @@ exports.register = (req, res) => {
                 db.query(
                     "INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())",
                     [nombre, correo, hashedPassword, tipo_usuario],
-                    (err) => {
+                    (err, result) => {
                         if (err) {
                             return res.status(500).json({
                                 success: false,
@@ -37,10 +37,29 @@ exports.register = (req, res) => {
                             });
                         }
 
-                        res.status(201).json({
-                            success: true,
-                            message: "Usuario registrado exitosamente"
-                        });
+                        if (tipo_usuario === "profesional") {
+                            db.query(
+                                "INSERT INTO Profesional (id_usuario) VALUES (?)",
+                                [result.insertId],
+                                (err2) => {
+                                    if (err2) {
+                                        return res.status(500).json({
+                                            success: false,
+                                            message: "Error al crear perfil profesional"
+                                        });
+                                    }
+                                    res.status(201).json({
+                                        success: true,
+                                        message: "Usuario registrado exitosamente"
+                                    });
+                                }
+                            );
+                        } else {
+                            res.status(201).json({
+                                success: true,
+                                message: "Usuario registrado exitosamente"
+                            });
+                        }
                     }
                 );
             } catch (error) {
