@@ -22,6 +22,16 @@ exports.verifyToken = (req, res, next) => {
     }
 };
 
+exports.requireRole = (...roles) => (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ success: false, message: "No autenticado" });
+    }
+    if (!roles.includes(req.user.tipo_usuario)) {
+        return res.status(403).json({ success: false, message: "Acceso no permitido" });
+    }
+    next();
+};
+
 exports.generateToken = (user) => {
     return jwt.sign(
         {

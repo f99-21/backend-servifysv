@@ -4,13 +4,23 @@ const db = require("../db");
 exports.getProfesionales = (req, res) => {
 
     const query = `
-        SELECT 
+        SELECT
             p.id_profesional,
-            u.nombre,
             p.especialidad,
+            p.descripcion,
+            p.experiencia,
+            p.estado_verificacion,
+            p.calificacion_promedio,
+            p.total_calificaciones,
+            u.id_usuario,
+            u.nombre,
+            u.correo,
+            u.tipo_usuario,
+            s.id_servicio,
             s.nombre_servicio,
             s.categoria,
-            s.precio_referencia
+            s.precio_referencia,
+            s.disponibilidad
         FROM Profesional p
         INNER JOIN Usuario u ON p.id_usuario = u.id_usuario
         INNER JOIN Servicio s ON s.id_profesional = p.id_profesional
@@ -22,24 +32,35 @@ exports.getProfesionales = (req, res) => {
             return res.status(500).json({ ok: false });
         }
 
-        // agrupar por profesional
         const map = {};
 
         results.forEach(row => {
 
             if (!map[row.id_profesional]) {
                 map[row.id_profesional] = {
-                    id: row.id_profesional,
-                    nombre: row.nombre,
+                    id_profesional: row.id_profesional,
                     especialidad: row.especialidad,
+                    descripcion: row.descripcion,
+                    experiencia: row.experiencia,
+                    estado_verificacion: row.estado_verificacion,
+                    calificacion_promedio: row.calificacion_promedio,
+                    total_calificaciones: row.total_calificaciones,
+                    usuario: {
+                        id_usuario: row.id_usuario,
+                        nombre: row.nombre,
+                        correo: row.correo,
+                        tipo_usuario: row.tipo_usuario
+                    },
                     servicios: []
                 };
             }
 
             map[row.id_profesional].servicios.push({
-                nombre: row.nombre_servicio,
+                id_servicio: row.id_servicio,
+                nombre_servicio: row.nombre_servicio,
                 categoria: row.categoria,
-                precio: row.precio_referencia
+                precio_referencia: row.precio_referencia,
+                disponibilidad: row.disponibilidad
             });
         });
 
@@ -57,11 +78,21 @@ exports.getByCategoria = (req, res) => {
     const query = `
         SELECT
             p.id_profesional,
-            u.nombre,
             p.especialidad,
+            p.descripcion,
+            p.experiencia,
+            p.estado_verificacion,
+            p.calificacion_promedio,
+            p.total_calificaciones,
+            u.id_usuario,
+            u.nombre,
+            u.correo,
+            u.tipo_usuario,
+            s.id_servicio,
             s.nombre_servicio,
             s.categoria,
-            s.precio_referencia
+            s.precio_referencia,
+            s.disponibilidad
         FROM Profesional p
         INNER JOIN Usuario u ON p.id_usuario = u.id_usuario
         INNER JOIN Servicio s ON s.id_profesional = p.id_profesional
@@ -78,17 +109,29 @@ exports.getByCategoria = (req, res) => {
 
             if (!map[row.id_profesional]) {
                 map[row.id_profesional] = {
-                    id: row.id_profesional,
-                    nombre: row.nombre,
+                    id_profesional: row.id_profesional,
                     especialidad: row.especialidad,
+                    descripcion: row.descripcion,
+                    experiencia: row.experiencia,
+                    estado_verificacion: row.estado_verificacion,
+                    calificacion_promedio: row.calificacion_promedio,
+                    total_calificaciones: row.total_calificaciones,
+                    usuario: {
+                        id_usuario: row.id_usuario,
+                        nombre: row.nombre,
+                        correo: row.correo,
+                        tipo_usuario: row.tipo_usuario
+                    },
                     servicios: []
                 };
             }
 
             map[row.id_profesional].servicios.push({
-                nombre: row.nombre_servicio,
+                id_servicio: row.id_servicio,
+                nombre_servicio: row.nombre_servicio,
                 categoria: row.categoria,
-                precio: row.precio_referencia
+                precio_referencia: row.precio_referencia,
+                disponibilidad: row.disponibilidad
             });
         });
 
@@ -198,20 +241,20 @@ exports.obtenerPerfilCompleto = (req, res) => {
         res.json({
             success: true,
             profesional: {
-                id: row.id_profesional,
-                usuario: {
-                    id: row.id_usuario,
-                    nombre: row.nombre,
-                    correo: row.correo,
-                    tipo: row.tipo_usuario
-                },
+                id_profesional: row.id_profesional,
                 especialidad: row.especialidad,
                 descripcion: row.descripcion,
                 experiencia: row.experiencia,
+                estado_verificacion: row.estado_verificacion,
+                calificacion_promedio: row.calificacion_promedio,
+                total_calificaciones: row.total_calificaciones,
                 biografia: row.biografia,
-                estadoVerificacion: row.estado_verificacion,
-                calificacionPromedio: row.calificacion_promedio,
-                totalCalificaciones: row.total_calificaciones
+                usuario: {
+                    id_usuario: row.id_usuario,
+                    nombre: row.nombre,
+                    correo: row.correo,
+                    tipo_usuario: row.tipo_usuario
+                }
             }
         });
     });

@@ -9,10 +9,15 @@ exports.getHistorial = (req, res) => {
             s.id_solicitud,
             s.estado,
             s.fecha,
+            s.descripcion,
+            p.id_profesional,
+            u.id_usuario AS prof_id_usuario,
+            u.nombre AS profesional,
+            u.correo AS prof_correo,
+            serv.id_servicio,
             serv.nombre_servicio,
             serv.categoria,
-            serv.precio_referencia,
-            u.nombre AS profesional
+            serv.precio_referencia
         FROM Solicitud s
         INNER JOIN Servicio serv ON s.id_servicio = serv.id_servicio
         INNER JOIN Profesional p ON s.id_profesional = p.id_profesional
@@ -30,16 +35,24 @@ exports.getHistorial = (req, res) => {
         }
 
         const historial = results.map(row => ({
-            id: row.id_solicitud,
+            id_solicitud: row.id_solicitud,
             estado: row.estado,
             fecha: row.fecha,
-            servicio: {
-                nombre: row.nombre_servicio,
-                categoria: row.categoria,
-                precio: row.precio_referencia
-            },
+            descripcion: row.descripcion || "",
             profesional: {
-                nombre: row.profesional
+                id_profesional: row.id_profesional,
+                usuario: {
+                    id_usuario: row.prof_id_usuario,
+                    nombre: row.profesional,
+                    correo: row.prof_correo,
+                    tipo_usuario: "profesional"
+                }
+            },
+            servicio: {
+                id_servicio: row.id_servicio,
+                nombre_servicio: row.nombre_servicio,
+                categoria: row.categoria,
+                precio_referencia: row.precio_referencia
             }
         }));
 
@@ -58,10 +71,14 @@ exports.obtenerTrabajosProfesional = (req, res) => {
             s.id_solicitud,
             s.estado,
             s.fecha,
+            s.descripcion,
+            u.id_usuario AS cliente_id,
+            u.nombre AS cliente,
+            u.correo AS cliente_correo,
+            serv.id_servicio,
             serv.nombre_servicio,
             serv.categoria,
-            serv.precio_referencia,
-            u.nombre AS cliente
+            serv.precio_referencia
         FROM Solicitud s
         INNER JOIN Servicio serv ON s.id_servicio = serv.id_servicio
         INNER JOIN Profesional p ON s.id_profesional = p.id_profesional
@@ -81,16 +98,21 @@ exports.obtenerTrabajosProfesional = (req, res) => {
         }
 
         const trabajos = results.map(row => ({
-            id: row.id_solicitud,
+            id_solicitud: row.id_solicitud,
             estado: row.estado,
             fecha: row.fecha,
-            servicio: {
-                nombre: row.nombre_servicio,
-                categoria: row.categoria,
-                precio: row.precio_referencia
-            },
+            descripcion: row.descripcion || "",
             cliente: {
-                nombre: row.cliente
+                id_usuario: row.cliente_id,
+                nombre: row.cliente,
+                correo: row.cliente_correo,
+                tipo_usuario: "cliente"
+            },
+            servicio: {
+                id_servicio: row.id_servicio,
+                nombre_servicio: row.nombre_servicio,
+                categoria: row.categoria,
+                precio_referencia: row.precio_referencia
             }
         }));
 
