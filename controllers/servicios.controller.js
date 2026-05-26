@@ -121,6 +121,7 @@ exports.obtenerServiciosProfesional = (req, res) => {
     const query = `
         SELECT
             id_servicio,
+            id_profesional,
             nombre_servicio,
             categoria,
             descripcion,
@@ -142,13 +143,14 @@ exports.obtenerServiciosProfesional = (req, res) => {
         }
 
         const servicios = results.map(row => ({
-            id: row.id_servicio,
-            nombre: row.nombre_servicio,
+            id_servicio: row.id_servicio,
+            id_profesional: row.id_profesional,
+            nombre_servicio: row.nombre_servicio,
             categoria: row.categoria,
             descripcion: row.descripcion,
-            precio: row.precio_referencia,
-            disponible: row.disponibilidad === 1,
-            fechaCreacion: row.fecha_creacion
+            precio_referencia: row.precio_referencia,
+            disponibilidad: row.disponibilidad,
+            fecha_creacion: row.fecha_creacion
         }));
 
         res.json({

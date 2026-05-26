@@ -8,9 +8,9 @@ const {
     idProfesionalSchema,
     idSolicitudSchema
 } = require("../../schemas/resena.schema");
-const { verifyToken } = require("../../middleware/auth.middleware");
+const { verifyToken, requireRole } = require("../../middleware/auth.middleware");
 
-router.post("/", verifyToken, validateRequest(crearResenaSchema), resenaController.crearResena);
+router.post("/", verifyToken, requireRole("cliente"), validateRequest(crearResenaSchema), resenaController.crearResena);
 
 router.get("/profesional/:id", validateParams(idProfesionalSchema), resenaController.obtenerResenasProfesional);
 

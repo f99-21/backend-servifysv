@@ -43,8 +43,9 @@ exports.obtenerSolicitudesProfesional = (req, res) => {
             s.fecha,
             s.descripcion,
             u.id_usuario,
-            u.nombre AS cliente,
-            u.correo,
+            u.nombre AS cliente_nombre,
+            u.correo AS cliente_correo,
+            serv.id_servicio,
             serv.nombre_servicio,
             serv.precio_referencia
         FROM Solicitud s
@@ -64,18 +65,19 @@ exports.obtenerSolicitudesProfesional = (req, res) => {
         }
 
         const solicitudes = results.map(row => ({
-            id: row.id_solicitud,
+            id_solicitud: row.id_solicitud,
             estado: row.estado,
             fecha: row.fecha,
             descripcion: row.descripcion,
             cliente: {
-                id: row.id_usuario,
-                nombre: row.cliente,
-                correo: row.correo
+                id_usuario: row.id_usuario,
+                nombre: row.cliente_nombre,
+                correo: row.cliente_correo
             },
             servicio: {
-                nombre: row.nombre_servicio,
-                precio: row.precio_referencia
+                id_servicio: row.id_servicio,
+                nombre_servicio: row.nombre_servicio,
+                precio_referencia: row.precio_referencia
             }
         }));
 
@@ -96,8 +98,10 @@ exports.obtenerSolicitudesCliente = (req, res) => {
             s.fecha,
             s.descripcion,
             p.id_profesional,
-            u.nombre AS profesional,
-            u.correo,
+            u.id_usuario AS prof_id_usuario,
+            u.nombre AS prof_nombre,
+            u.correo AS prof_correo,
+            serv.id_servicio,
             serv.nombre_servicio,
             serv.precio_referencia
         FROM Solicitud s
@@ -118,18 +122,23 @@ exports.obtenerSolicitudesCliente = (req, res) => {
         }
 
         const solicitudes = results.map(row => ({
-            id: row.id_solicitud,
+            id_solicitud: row.id_solicitud,
             estado: row.estado,
             fecha: row.fecha,
             descripcion: row.descripcion,
             profesional: {
-                id: row.id_profesional,
-                nombre: row.profesional,
-                correo: row.correo
+                id_profesional: row.id_profesional,
+                usuario: {
+                    id_usuario: row.prof_id_usuario,
+                    nombre: row.prof_nombre,
+                    correo: row.prof_correo,
+                    tipo_usuario: "profesional"
+                }
             },
             servicio: {
-                nombre: row.nombre_servicio,
-                precio: row.precio_referencia
+                id_servicio: row.id_servicio,
+                nombre_servicio: row.nombre_servicio,
+                precio_referencia: row.precio_referencia
             }
         }));
 
@@ -185,9 +194,11 @@ exports.obtenerDetalleSolicitud = (req, res) => {
             u_cliente.id_usuario AS cliente_id,
             u_cliente.nombre AS cliente_nombre,
             u_cliente.correo AS cliente_correo,
-            u_prof.id_usuario AS prof_id,
+            p.id_profesional,
+            u_prof.id_usuario AS prof_usuario_id,
             u_prof.nombre AS prof_nombre,
             u_prof.correo AS prof_correo,
+            serv.id_servicio,
             serv.nombre_servicio,
             serv.precio_referencia
         FROM Solicitud s
@@ -218,23 +229,29 @@ exports.obtenerDetalleSolicitud = (req, res) => {
         res.json({
             success: true,
             solicitud: {
-                id: row.id_solicitud,
+                id_solicitud: row.id_solicitud,
                 estado: row.estado,
                 fecha: row.fecha,
                 descripcion: row.descripcion,
                 cliente: {
-                    id: row.cliente_id,
+                    id_usuario: row.cliente_id,
                     nombre: row.cliente_nombre,
-                    correo: row.cliente_correo
+                    correo: row.cliente_correo,
+                    tipo_usuario: "cliente"
                 },
                 profesional: {
-                    id: row.prof_id,
-                    nombre: row.prof_nombre,
-                    correo: row.prof_correo
+                    id_profesional: row.id_profesional,
+                    usuario: {
+                        id_usuario: row.prof_usuario_id,
+                        nombre: row.prof_nombre,
+                        correo: row.prof_correo,
+                        tipo_usuario: "profesional"
+                    }
                 },
                 servicio: {
-                    nombre: row.nombre_servicio,
-                    precio: row.precio_referencia
+                    id_servicio: row.id_servicio,
+                    nombre_servicio: row.nombre_servicio,
+                    precio_referencia: row.precio_referencia
                 }
             }
         });

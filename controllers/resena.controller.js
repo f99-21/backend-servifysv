@@ -3,34 +3,76 @@ const db = require("../db");
 exports.crearResena = (req, res) => {
     const { idSolicitud, idCliente, idProfesional, calificacion, comentario } = req.validatedData;
 
-    const query = `
-        INSERT INTO Resena (id_solicitud, id_cliente, id_profesional, calificacion, comentario, fecha_resena)
-        VALUES (?, ?, ?, ?, ?, CURDATE())
-    `;
+    // Verificar que la solicitud esté completada y pertenezca al cliente
+    db.query(
+        "SELECT id_solicitud FROM Solicitud WHERE id_solicitud = ? AND id_cliente = ? AND estado = 'completada'",
+        [idSolicitud, idCliente],
+        (err, solicitudResult) => {
+            if (err) return res.status(500).json({ success: false, message: "Error en el servidor" });
 
-    db.query(query, [idSolicitud, idCliente, idProfesional, calificacion, comentario], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({
-                success: false,
-                message: "Error al crear reseña"
-            });
-        }
-
-        res.status(201).json({
-            success: true,
-            message: "Reseña creada exitosamente",
-            resena: {
-                id: result.insertId,
-                idSolicitud,
-                idCliente,
-                idProfesional,
-                calificacion,
-                comentario,
-                fechaResena: new Date().toISOString().split('T')[0]
+            if (solicitudResult.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "La solicitud no existe, no está completada o no pertenece a este cliente"
+                });
             }
-        });
-    });
+
+            // Verificar que no haya reseña previa para esta solicitud
+            db.query(
+                "SELECT id_resena FROM Resena WHERE id_solicitud = ?",
+                [idSolicitud],
+                (err2, resenaExistente) => {
+                    if (err2) return res.status(500).json({ success: false, message: "Error en el servidor" });
+
+                    if (resenaExistente.length > 0) {
+                        return res.status(400).json({
+                            success: false,
+                            message: "Ya existe una reseña para esta solicitud"
+                        });
+                    }
+
+                    db.query(
+                        "INSERT INTO Resena (id_solicitud, id_cliente, id_profesional, calificacion, comentario, fecha_resena) VALUES (?, ?, ?, ?, ?, CURDATE())",
+                        [idSolicitud, idCliente, idProfesional, calificacion, comentario],
+                        (err3, result) => {
+                            if (err3) {
+                                console.error(err3);
+                                return res.status(500).json({ success: false, message: "Error al crear reseña" });
+                            }
+
+                            // Actualizar calificacion_promedio y total_calificaciones del profesional
+                            db.query(
+                                `UPDATE Profesional
+                                 SET total_calificaciones = total_calificaciones + 1,
+                                     calificacion_promedio = (
+                                         SELECT AVG(calificacion) FROM Resena WHERE id_profesional = ?
+                                     )
+                                 WHERE id_profesional = ?`,
+                                [idProfesional, idProfesional],
+                                (err4) => {
+                                    if (err4) console.error("Error actualizando calificación:", err4);
+                                }
+                            );
+
+                            res.status(201).json({
+                                success: true,
+                                message: "Reseña creada exitosamente",
+                                resena: {
+                                    id: result.insertId,
+                                    idSolicitud,
+                                    idCliente,
+                                    idProfesional,
+                                    calificacion,
+                                    comentario,
+                                    fechaResena: new Date().toISOString().split('T')[0]
+                                }
+                            });
+                        }
+                    );
+                }
+            );
+        }
+    );
 };
 
 exports.obtenerResenasProfesional = (req, res) => {
