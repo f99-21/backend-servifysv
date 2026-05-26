@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const db = require("../db");
 
 exports.verifyToken = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
@@ -12,8 +13,24 @@ exports.verifyToken = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
+
+        db.query(
+            "SELECT ultimo_logout FROM Usuario WHERE id_usuario = ?",
+            [decoded.id],
+            (err, results) => {
+                if (err || results.length === 0) {
+                    return res.status(401).json({ success: false, message: "Token inválido" });
+                }
+
+                const ultimoLogout = results[0].ultimo_logout;
+                if (ultimoLogout && decoded.iat * 1000 < new Date(ultimoLogout).getTime()) {
+                    return res.status(401).json({ success: false, message: "Token inválido o expirado" });
+                }
+
+                req.user = decoded;
+                next();
+            }
+        );
     } catch (err) {
         return res.status(401).json({
             success: false,

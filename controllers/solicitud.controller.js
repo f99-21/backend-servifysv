@@ -49,10 +49,9 @@ exports.obtenerSolicitudesProfesional = (req, res) => {
             serv.nombre_servicio,
             serv.precio_referencia
         FROM Solicitud s
-        INNER JOIN Profesional p ON s.id_profesional = p.id_profesional
         INNER JOIN Usuario u ON s.id_cliente = u.id_usuario
         INNER JOIN Servicio serv ON s.id_servicio = serv.id_servicio
-        WHERE p.id_usuario = ?
+        WHERE s.id_profesional = ?
         ORDER BY s.fecha DESC
     `;
 

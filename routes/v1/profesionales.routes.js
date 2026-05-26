@@ -7,6 +7,8 @@ const { verifyToken, requireRole } = require("../../middleware/auth.middleware")
 
 router.get("/", profesionalesController.getProfesionales);
 
+router.get("/buscar", profesionalesController.buscar);
+
 router.get("/categoria/:categoria", validateParams(categoriaSchema), profesionalesController.getByCategoria);
 
 router.get("/:id", validateParams(idProfesionalSchema), profesionalesController.obtenerPerfilCompleto);

@@ -9,6 +9,8 @@ router.post("/register", validateRequest(registerSchema), authController.registe
 
 router.post("/login", validateRequest(loginSchema), authController.login);
 
+router.post("/logout", verifyToken, authController.logout);
+
 router.get("/perfil/:id", verifyToken, validateParams(perfilSchema), authController.getPerfil);
 
 router.put("/perfil/:id", verifyToken, validateParams(perfilSchema), validateRequest(actualizarPerfilSchema), authController.actualizarPerfil);

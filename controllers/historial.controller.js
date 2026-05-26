@@ -139,7 +139,7 @@ exports.obtenerIngresosProfesional = (req, res) => {
         WHERE p.id_usuario = ?
         AND s.estado = 'completada'
         GROUP BY serv.categoria, DATE_FORMAT(s.fecha, '%Y-%m')
-        ORDER BY s.fecha DESC
+        ORDER BY mes DESC
     `;
 
     db.query(query, [idUsuario], (err, results) => {

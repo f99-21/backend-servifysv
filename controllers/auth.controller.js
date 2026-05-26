@@ -106,17 +106,44 @@ exports.login = (req, res) => {
 
                 const token = generateToken(user);
 
-                res.json({
-                    success: true,
-                    message: "Login exitoso",
-                    token,
-                    usuario: {
-                        id: user.id_usuario,
-                        nombre: user.nombre,
-                        correo: user.correo,
-                        tipo_usuario: user.tipo_usuario
-                    }
-                });
+                if (user.tipo_usuario === "profesional") {
+                    db.query(
+                        "SELECT id_profesional FROM Profesional WHERE id_usuario = ?",
+                        [user.id_usuario],
+                        (err2, profResult) => {
+                            if (err2 || profResult.length === 0) {
+                                return res.status(500).json({
+                                    success: false,
+                                    message: "Error al obtener perfil profesional"
+                                });
+                            }
+                            res.json({
+                                success: true,
+                                message: "Login exitoso",
+                                token,
+                                usuario: {
+                                    id: user.id_usuario,
+                                    id_profesional: profResult[0].id_profesional,
+                                    nombre: user.nombre,
+                                    correo: user.correo,
+                                    tipo_usuario: user.tipo_usuario
+                                }
+                            });
+                        }
+                    );
+                } else {
+                    res.json({
+                        success: true,
+                        message: "Login exitoso",
+                        token,
+                        usuario: {
+                            id: user.id_usuario,
+                            nombre: user.nombre,
+                            correo: user.correo,
+                            tipo_usuario: user.tipo_usuario
+                        }
+                    });
+                }
             } catch (error) {
                 return res.status(500).json({
                     success: false,
@@ -152,6 +179,20 @@ exports.getPerfil = (req, res) => {
                 success: true,
                 usuario: result[0]
             });
+        }
+    );
+};
+
+exports.logout = (req, res) => {
+    const userId = req.user.id;
+
+    db.query(
+        "UPDATE Usuario SET ultimo_logout = NOW() WHERE id_usuario = ?",
+        [userId],
+        (err) => {
+            if (err) return res.status(500).json({ success: false, message: "Error al cerrar sesión" });
+
+            res.json({ success: true, message: "Sesión cerrada exitosamente" });
         }
     );
 };

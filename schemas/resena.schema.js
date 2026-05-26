@@ -14,8 +14,7 @@ exports.crearResenaSchema = Joi.object({
         "number.min": "Calificación mínima es 1",
         "number.max": "Calificación máxima es 5"
     }),
-    comentario: Joi.string().min(5).max(1000).required().messages({
-        "string.min": "El comentario debe tener al menos 5 caracteres",
+    comentario: Joi.string().max(1000).optional().allow("", null).messages({
         "string.max": "El comentario no puede exceder 1000 caracteres"
     })
 });

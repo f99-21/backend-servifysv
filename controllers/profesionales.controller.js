@@ -142,6 +142,65 @@ exports.getByCategoria = (req, res) => {
     });
 };
 
+exports.buscar = (req, res) => {
+    const { q, categoria, precioMin, precioMax, calificacion } = req.query;
+
+    let conditions = [];
+    let values = [];
+
+    if (q) {
+        conditions.push("(u.nombre LIKE ? OR p.especialidad LIKE ? OR p.descripcion LIKE ?)");
+        values.push(`%${q}%`, `%${q}%`, `%${q}%`);
+    }
+    if (categoria) {
+        conditions.push("s.categoria = ?");
+        values.push(categoria);
+    }
+    if (precioMin) {
+        conditions.push("s.precio_referencia >= ?");
+        values.push(Number(precioMin));
+    }
+    if (precioMax) {
+        conditions.push("s.precio_referencia <= ?");
+        values.push(Number(precioMax));
+    }
+    if (calificacion) {
+        conditions.push("p.calificacion_promedio >= ?");
+        values.push(Number(calificacion));
+    }
+
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    const query = `
+        SELECT DISTINCT
+            p.id_profesional,
+            p.especialidad,
+            p.descripcion,
+            p.experiencia,
+            p.calificacion_promedio,
+            p.total_calificaciones,
+            u.id_usuario,
+            u.nombre,
+            u.correo,
+            s.categoria,
+            s.precio_referencia
+        FROM Profesional p
+        INNER JOIN Usuario u ON p.id_usuario = u.id_usuario
+        INNER JOIN Servicio s ON s.id_profesional = p.id_profesional
+        ${where}
+        ORDER BY p.calificacion_promedio DESC
+    `;
+
+    db.query(query, values, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: "Error al buscar profesionales" });
+        }
+
+        res.json({ success: true, total: results.length, profesionales: results });
+    });
+};
+
 exports.actualizarPerfil = (req, res) => {
     const { id } = req.validatedParams;
     const { especialidad, descripcion, experiencia, biografia } = req.validatedData;
